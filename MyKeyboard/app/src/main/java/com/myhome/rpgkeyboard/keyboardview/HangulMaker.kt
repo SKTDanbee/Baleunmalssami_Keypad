@@ -168,6 +168,7 @@ open class HangulMaker {
             return
         }
         inputConnection.commitText(makeHan().toString(), 1)
+        Log.d("commit", makeHan().toString()) // 스페이스바 누르면 commitText로 한글자 출력
         state = 0
         clear()
     }
