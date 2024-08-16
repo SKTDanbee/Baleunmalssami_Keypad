@@ -1,3 +1,9 @@
+안드로이드 키보드 오픈소스 기반 추가 개발을 진행하여 Ansim Keypad를 제작하였습니다.
+> - 비속어 대체어 제시를 입력받을 공간 확보
+> - 완전한 한 글자 입력 및 삭제에 따른 Log 출력
+
+---
+[Reference] Keyboard-Sample <https://github.com/godsangin/Keyboard-Sample>
 # Keyboard-Sample
 안드로이드 키보드 샘플입니다.
 * onclickevent를 통해 keyevent송수신(V)
