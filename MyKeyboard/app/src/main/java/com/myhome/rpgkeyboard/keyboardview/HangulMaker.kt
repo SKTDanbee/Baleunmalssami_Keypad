@@ -29,10 +29,20 @@ open class HangulMaker {
     constructor(inputConnection: InputConnection){
         this.inputConnection = inputConnection
     }
+    fun getCursorPosition(): Int {
+        return inputConnection?.getTextBeforeCursor(1000, 0)?.length ?: 0
+    }
 
     // Utility function to wrap Log.d call
     private fun logCommit(char: Char) {
         Log.d("commit", char.toString())
+        Log.d("cursor", getCursorPosition().toString())
+    }
+    // get current state state은 delete에서 0 으로 지우면 글자를 다 지우고 1 2 3은 초성 중성 종성을 지우는 것
+    // cursor 위치에 따라서 지워지는 것이 다름
+    fun fetchState(): Int {
+        Log.d("state", state.toString())
+        return state
     }
 
     fun clear(){
@@ -180,6 +190,7 @@ open class HangulMaker {
     }
 
     open fun delete(){
+        fetchState()
         when(state){
             0 -> {
                 inputConnection.deleteSurroundingText(1, 0)

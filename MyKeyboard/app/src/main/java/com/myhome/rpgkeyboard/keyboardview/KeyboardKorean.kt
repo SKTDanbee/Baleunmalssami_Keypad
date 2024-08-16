@@ -24,6 +24,11 @@ import java.lang.NumberFormatException
 
 class KeyboardKorean constructor(var context:Context, var layoutInflater: LayoutInflater, var keyboardInterationListener: KeyboardInterationListener){
 
+    // log cursor position Delete 할 때 또는 커서를 옮긴 후에도 사용
+    fun logCursor(cursorPosition:Int){
+        Log.d("cursor", cursorPosition.toString())
+    }
+
     lateinit var koreanLayout: LinearLayout
     var isCaps:Boolean = false
     var buttons:MutableList<Button> = mutableListOf<Button>()
@@ -367,11 +372,12 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         return inputConnection?.getTextBeforeCursor(1000, 0)?.length ?: 0
     }
 
+
     fun getDeleteAction(): View.OnClickListener {
         return View.OnClickListener {
             playVibrate()
             val cursorPosition = getCursorPosition()
-            Log.d("KeyboardKorean", "Cursor position before delete: $cursorPosition")
+            logCursor(cursorPosition) // Delete 할 때 cursor log
             val cursorcs: CharSequence? = inputConnection?.getSelectedText(InputConnection.GET_TEXT_WITH_STYLES)
             if (cursorcs != null && cursorcs.length >= 2) {
                 val eventTime = SystemClock.uptimeMillis()
