@@ -29,6 +29,12 @@ open class HangulMaker {
     constructor(inputConnection: InputConnection){
         this.inputConnection = inputConnection
     }
+
+    // Utility function to wrap Log.d call
+    private fun logCommit(char: Char) {
+        Log.d("commit", char.toString())
+    }
+
     fun clear(){
         cho = '\u0000'
         jun = '\u0000'
@@ -64,7 +70,7 @@ open class HangulMaker {
             0 -> {
                 if(juns.indexOf(c.toInt()) >= 0){
                     inputConnection.commitText(c.toString(), 1)
-                    Log.d("commit", c.toString())
+                    logCommit(c)
                     clear()
                 }else{//초성일 경우
                     state = 1
@@ -75,7 +81,7 @@ open class HangulMaker {
             1 -> {
                 if(chos.indexOf(c.toInt()) >= 0){
                     inputConnection.commitText(cho.toString(), 1)
-                    Log.d("commit", cho.toString())
+                    logCommit(cho)
                     clear()
                     cho = c
                     inputConnection.setComposingText(cho.toString(), 1)
@@ -92,9 +98,9 @@ open class HangulMaker {
                     }
                     else{
                         inputConnection.commitText(makeHan().toString(), 1)
-                        Log.d("commit", makeHan().toString())
+                        logCommit(makeHan())
                         inputConnection.commitText(c.toString(), 1)
-                        Log.d("commit", c.toString())
+                        logCommit(c)
                         clear()
                         state = 0
                     }
@@ -118,7 +124,7 @@ open class HangulMaker {
                     }
                     else{
                         inputConnection.commitText(makeHan().toString(), 1)
-                        Log.d("commit", makeHan().toString())
+                        logCommit(makeHan())
                         clear()
                         state = 1
                         cho = c
@@ -128,7 +134,7 @@ open class HangulMaker {
                 }
                 else if(chos.indexOf(c.toInt()) >= 0){
                     inputConnection.commitText(makeHan().toString(), 1)
-                    Log.d("commit", makeHan().toString())
+                    logCommit(makeHan())
                     state = 1
                     clear()
                     cho = c
@@ -140,13 +146,13 @@ open class HangulMaker {
                         temp = jon
                         jon = '\u0000'
                         inputConnection.commitText(makeHan().toString(), 1)
-                        Log.d("commit", makeHan().toString())
+                        logCommit(makeHan())
                     }
                     else{
                         temp = doubleJonFlag
                         jon = jonFlag
                         inputConnection.commitText(makeHan().toString(), 1)
-                        Log.d("commit", makeHan().toString())
+                        logCommit(makeHan())
                     }
                     state = 2
                     clear()
@@ -168,7 +174,7 @@ open class HangulMaker {
             return
         }
         inputConnection.commitText(makeHan().toString(), 1)
-        Log.d("commit", makeHan().toString()) // 스페이스바 누르면 commitText로 한글자 출력
+        logCommit(makeHan()) // 스페이스바 누르면 commitText로 한글자 출력
         state = 0
         clear()
     }
