@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.inputmethodservice.Keyboard
 import android.media.AudioManager
 import android.os.*
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -362,12 +363,17 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         }
     }
 
-    fun getDeleteAction():View.OnClickListener{
-        return View.OnClickListener{
-            playVibrate()
-            val cursorcs:CharSequence? =  inputConnection?.getSelectedText(InputConnection.GET_TEXT_WITH_STYLES)
-            if(cursorcs != null && cursorcs.length >= 2){
+    fun getCursorPosition(): Int {
+        return inputConnection?.getTextBeforeCursor(1000, 0)?.length ?: 0
+    }
 
+    fun getDeleteAction(): View.OnClickListener {
+        return View.OnClickListener {
+            playVibrate()
+            val cursorPosition = getCursorPosition()
+            Log.d("KeyboardKorean", "Cursor position before delete: $cursorPosition")
+            val cursorcs: CharSequence? = inputConnection?.getSelectedText(InputConnection.GET_TEXT_WITH_STYLES)
+            if (cursorcs != null && cursorcs.length >= 2) {
                 val eventTime = SystemClock.uptimeMillis()
                 inputConnection?.finishComposingText()
                 inputConnection?.sendKeyEvent(KeyEvent(eventTime, eventTime,
@@ -377,8 +383,7 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
                     KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0,
                     KeyEvent.FLAG_SOFT_KEYBOARD))
                 hangulMaker.clear()
-            }
-            else{
+            } else {
                 hangulMaker.delete()
             }
         }

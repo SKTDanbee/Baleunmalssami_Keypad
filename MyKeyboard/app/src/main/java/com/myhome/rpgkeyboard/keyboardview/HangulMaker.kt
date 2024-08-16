@@ -64,6 +64,7 @@ open class HangulMaker {
             0 -> {
                 if(juns.indexOf(c.toInt()) >= 0){
                     inputConnection.commitText(c.toString(), 1)
+                    Log.d("commit", c.toString())
                     clear()
                 }else{//초성일 경우
                     state = 1
@@ -74,6 +75,7 @@ open class HangulMaker {
             1 -> {
                 if(chos.indexOf(c.toInt()) >= 0){
                     inputConnection.commitText(cho.toString(), 1)
+                    Log.d("commit", cho.toString())
                     clear()
                     cho = c
                     inputConnection.setComposingText(cho.toString(), 1)
@@ -90,7 +92,9 @@ open class HangulMaker {
                     }
                     else{
                         inputConnection.commitText(makeHan().toString(), 1)
+                        Log.d("commit", makeHan().toString())
                         inputConnection.commitText(c.toString(), 1)
+                        Log.d("commit", c.toString())
                         clear()
                         state = 0
                     }
@@ -114,6 +118,7 @@ open class HangulMaker {
                     }
                     else{
                         inputConnection.commitText(makeHan().toString(), 1)
+                        Log.d("commit", makeHan().toString())
                         clear()
                         state = 1
                         cho = c
@@ -123,6 +128,7 @@ open class HangulMaker {
                 }
                 else if(chos.indexOf(c.toInt()) >= 0){
                     inputConnection.commitText(makeHan().toString(), 1)
+                    Log.d("commit", makeHan().toString())
                     state = 1
                     clear()
                     cho = c
@@ -134,11 +140,13 @@ open class HangulMaker {
                         temp = jon
                         jon = '\u0000'
                         inputConnection.commitText(makeHan().toString(), 1)
+                        Log.d("commit", makeHan().toString())
                     }
                     else{
                         temp = doubleJonFlag
                         jon = jonFlag
                         inputConnection.commitText(makeHan().toString(), 1)
+                        Log.d("commit", makeHan().toString())
                     }
                     state = 2
                     clear()
