@@ -28,6 +28,13 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
     fun logCursor(cursorPosition:Int){
         Log.d("cursor", cursorPosition.toString())
     }
+    fun logEnter(cursorPosition: Int){
+        Log.d("Enter", "Enter, Cusor Position: ${cursorPosition.toString()}")
+    }
+
+    fun logSpace(cursorPosition: Int){
+        Log.d("Space", "Space, Cusor Position: ${cursorPosition.toString()}")
+    }
 
     lateinit var koreanLayout: LinearLayout
     var isCaps:Boolean = false
@@ -365,6 +372,7 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
             playClick('ㅂ'.toInt())
             playVibrate()
             hangulMaker.commitSpace()
+            logSpace(getCursorPosition())
         }
     }
 
@@ -406,6 +414,7 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         return View.OnClickListener{
             playVibrate()
             hangulMaker.directlyCommit()
+            logEnter(getCursorPosition())
             val eventTime = SystemClock.uptimeMillis()
             inputConnection?.sendKeyEvent(KeyEvent(eventTime, eventTime,
                 KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER, 0, 0, 0, 0,
