@@ -48,6 +48,23 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         SocketClient(SERVER_IP, SERVER_PORT, josonmessage).execute()
     }
 
+    fun replaceTextIfNeeded() {
+        // 현재 커서 앞의 텍스트를 가져옵니다.
+        val beforeText = inputConnection?.getTextBeforeCursor(100, 0).toString()
+
+        // 텍스트 대치 로직 추가
+        var modifiedText = beforeText
+        for ((key, value) in replacementMap) {
+            modifiedText = modifiedText.replace(key, value)
+        }
+
+        // 변경된 텍스트를 커밋
+        if (modifiedText != beforeText) {
+            inputConnection?.deleteSurroundingText(beforeText.length, 0)
+            inputConnection?.commitText(modifiedText, 1)
+        }
+    }
+
     lateinit var koreanLayout: LinearLayout
     var isCaps:Boolean = false
     var buttons:MutableList<Button> = mutableListOf<Button>()
@@ -224,16 +241,14 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         }
     }
 
-    private fun getMyClickListener(actionButton:Button):View.OnClickListener{
-
-        val clickListener = (View.OnClickListener {
+    private fun getMyClickListener(actionButton: Button): View.OnClickListener {
+        val clickListener = View.OnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 inputConnection?.requestCursorUpdates(InputConnection.CURSOR_UPDATE_IMMEDIATE)
             }
             playVibrate()
-            val cursorcs:CharSequence? =  inputConnection?.getSelectedText(InputConnection.GET_TEXT_WITH_STYLES)
-            if(cursorcs != null && cursorcs.length >= 2){
-
+            val cursorcs: CharSequence? = inputConnection?.getSelectedText(InputConnection.GET_TEXT_WITH_STYLES)
+            if (cursorcs != null && cursorcs.length >= 2) {
                 val eventTime = SystemClock.uptimeMillis()
                 inputConnection?.finishComposingText()
                 inputConnection?.sendKeyEvent(KeyEvent(eventTime, eventTime,
@@ -244,23 +259,24 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
                     KeyEvent.FLAG_SOFT_KEYBOARD))
                 hangulMaker.clear()
             }
+             // Add this line to call replaceTextIfNeeded
             when (actionButton.text.toString()) {
-
                 else -> {
                     playClick(actionButton.text.toString().toCharArray().get(0).toInt())
-                    try{
+                    try {
                         val myText = Integer.parseInt(actionButton.text.toString())
                         hangulMaker.directlyCommit()
                         inputConnection?.commitText(actionButton.text.toString(), 1)
-                    }catch (e:NumberFormatException){
+                    } catch (e: NumberFormatException) {
                         hangulMaker.commit(actionButton.text.toString().toCharArray().get(0))
+
                     }
-                    if(isCaps){
+                    if (isCaps) {
                         modeChange()
                     }
                 }
             }
-        })
+        }
         actionButton.setOnClickListener(clickListener)
         return clickListener
     }
@@ -383,8 +399,10 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         return View.OnClickListener{
             playClick('ㅂ'.toInt())
             playVibrate()
+
             hangulMaker.commitSpace()
             logSpace(getCursorPosition())
+            replaceTextIfNeeded()
         }
     }
 
@@ -427,6 +445,7 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
             playVibrate()
             hangulMaker.directlyCommit()
             logEnter(getCursorPosition())
+            replaceTextIfNeeded()
             val eventTime = SystemClock.uptimeMillis()
             inputConnection?.sendKeyEvent(KeyEvent(eventTime, eventTime,
                 KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER, 0, 0, 0, 0,
