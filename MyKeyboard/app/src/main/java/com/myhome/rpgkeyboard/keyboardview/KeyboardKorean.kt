@@ -21,6 +21,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.view.children
 import com.myhome.rpgkeyboard.*
+import com.myhome.rpgkeyboard.database.DatabaseHelper
 import org.json.JSONObject
 import java.lang.NumberFormatException
 
@@ -49,16 +50,21 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
     }
 
     fun replaceTextIfNeeded() {
-        // 현재 커서 앞의 텍스트를 가져옵니다.
+        val dbHelper = DatabaseHelper(context)
         val beforeText = inputConnection?.getTextBeforeCursor(100, 0).toString()
-
-        // 텍스트 대치 로직 추가
         var modifiedText = beforeText
+
         for ((key, value) in replacementMap) {
-            modifiedText = modifiedText.replace(key, value)
+            if (dbHelper.isProfaneWord(key)) {
+                val emoji = dbHelper.getEmojiForEmotion("happy") // Replace "happy" with the desired emotion
+                if (emoji != null) {
+                    modifiedText = modifiedText.replace(key, emoji)
+                }
+            } else {
+                modifiedText = modifiedText.replace(key, value)
+            }
         }
 
-        // 변경된 텍스트를 커밋
         if (modifiedText != beforeText) {
             inputConnection?.deleteSurroundingText(beforeText.length, 0)
             inputConnection?.commitText(modifiedText, 1)
