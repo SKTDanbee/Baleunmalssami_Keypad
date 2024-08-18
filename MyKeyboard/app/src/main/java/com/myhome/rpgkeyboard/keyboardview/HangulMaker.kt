@@ -82,6 +82,7 @@ open class HangulMaker {
         if(chos.indexOf(c.toInt()) < 0 && juns.indexOf(c.toInt()) < 0 && jons.indexOf(c.toInt()) < 0){
             directlyCommit()
             inputConnection.commitText(c.toString(), 1)
+            logCommit(c)
             return
         }
         when(state){

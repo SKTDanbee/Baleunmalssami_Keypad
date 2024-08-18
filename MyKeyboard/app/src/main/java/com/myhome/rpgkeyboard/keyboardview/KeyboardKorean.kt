@@ -49,25 +49,30 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         SocketClient(SERVER_IP, SERVER_PORT, josonmessage).execute()
     }
 
+
+
     fun replaceTextIfNeeded() {
         val dbHelper = DatabaseHelper(context)
         val beforeText = inputConnection?.getTextBeforeCursor(100, 0).toString()
-        var modifiedText = beforeText
+        val modifiedText = StringBuilder()
+        var start = 0
 
-        for ((key, value) in replacementMap) {
-            if (dbHelper.isProfaneWord(key)) {
-                val emoji = dbHelper.getEmojiForEmotion("happy") // Replace "happy" with the desired emotion
+        for (i in beforeText.indices) {
+            val substring = beforeText.substring(start, i + 1)
+            if (dbHelper.isProfaneWord(substring)) {
+                val emoji = dbHelper.getEmojiForEmotion(getEmotion()) // Replace with the emoji for the current emotion
                 if (emoji != null) {
-                    modifiedText = modifiedText.replace(key, emoji)
+                    modifiedText.append(emoji)
+                    start = i + 1
                 }
-            } else {
-                modifiedText = modifiedText.replace(key, value)
+            } else if (i == beforeText.length - 1) {
+                modifiedText.append(substring)
             }
         }
 
-        if (modifiedText != beforeText) {
+        if (modifiedText.toString() != beforeText) {
             inputConnection?.deleteSurroundingText(beforeText.length, 0)
-            inputConnection?.commitText(modifiedText, 1)
+            inputConnection?.commitText(modifiedText.toString(), 1)
         }
     }
 
