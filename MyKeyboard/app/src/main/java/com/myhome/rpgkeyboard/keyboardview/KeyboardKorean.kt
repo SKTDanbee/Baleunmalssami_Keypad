@@ -57,16 +57,23 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         val modifiedText = StringBuilder()
         var start = 0
 
-        for (i in beforeText.indices) {
-            val substring = beforeText.substring(start, i + 1)
-            if (dbHelper.isProfaneWord(substring)) {
-                val emoji = dbHelper.getEmojiForEmotion(getEmotion()) // Replace with the emoji for the current emotion
-                if (emoji != null) {
-                    modifiedText.append(emoji)
-                    start = i + 1
+        while (start < beforeText.length) {
+            var found = false
+            for (i in start until beforeText.length) {
+                val substring = beforeText.substring(start, i + 1)
+                if (dbHelper.isProfaneWord(substring)) {
+                    val emoji = dbHelper.getEmojiForEmotion(getEmotion())
+                    if (emoji != null) {
+                        modifiedText.append(emoji)
+                        start = i + 1
+                        found = true
+                        break
+                    }
                 }
-            } else if (i == beforeText.length - 1) {
-                modifiedText.append(substring)
+            }
+            if (!found) {
+                modifiedText.append(beforeText[start])
+                start++
             }
         }
 
@@ -75,6 +82,7 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
             inputConnection?.commitText(modifiedText.toString(), 1)
         }
     }
+
 
     lateinit var koreanLayout: LinearLayout
     var isCaps:Boolean = false

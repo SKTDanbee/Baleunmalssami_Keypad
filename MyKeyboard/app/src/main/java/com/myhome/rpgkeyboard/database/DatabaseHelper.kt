@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -63,6 +64,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             null
         )
         val emojis = mutableListOf<String>()
+        Log.d("DatabaseHelper", "getEmojiForEmotion: cursor count = ${cursor.count}")
         while (cursor.moveToNext()) {
             emojis.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMOJI)))
         }
