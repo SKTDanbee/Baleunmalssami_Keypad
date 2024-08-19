@@ -34,22 +34,30 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
     fun logEnter(cursorPosition: Int){
         Log.d("Enter", "Enter, Cusor Position: ${cursorPosition.toString()}")
         var josonmessage = JSONObject()
+        josonmessage.put("isEmpty", getTextEmpty())
         josonmessage.put("type", "commit")
         josonmessage.put("char", "\n")
         josonmessage.put("cursor", cursorPosition)
         SocketClient(SERVER_IP, SERVER_PORT, josonmessage).execute()
+        setTextEmpty(false)
     }
 
     fun logSpace(cursorPosition: Int){
         Log.d("Space", "Space, Cusor Position: ${cursorPosition.toString()}")
         var josonmessage = JSONObject()
+        josonmessage.put("isEmpty", getTextEmpty())
         josonmessage.put("type", "commit")
         josonmessage.put("char", " ")
         josonmessage.put("cursor", cursorPosition)
         SocketClient(SERVER_IP, SERVER_PORT, josonmessage).execute()
+        setTextEmpty(false)
     }
 
-
+    fun isTextPresent(){
+        val text = inputConnection?.getTextBeforeCursor(100, 0).toString()
+        setTextEmpty(text.isEmpty())
+        return
+    }
 
     fun replaceTextIfNeeded() {
         val dbHelper = DatabaseHelper(context)
@@ -261,6 +269,8 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
     }
 
     private fun getMyClickListener(actionButton: Button): View.OnClickListener {
+        isTextPresent()
+        Log.d("isTextPresent", IsTextEmpty.toString())
         val clickListener = View.OnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 inputConnection?.requestCursorUpdates(InputConnection.CURSOR_UPDATE_IMMEDIATE)

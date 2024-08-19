@@ -3,7 +3,9 @@ package com.myhome.rpgkeyboard.keyboardview;
 
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.LOCAL_PORT;
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.getEMOTION;
+import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.getTextEmpty;
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.setEMOTION;
+import static com.myhome.rpgkeyboard.keyboardview.KeyboardNumpad.inputConnection;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -15,7 +17,9 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import org.json.JSONObject;
 import org.json.JSONException;
+
 public class SocketClient extends AsyncTask<Void, Void, JSONObject> {
+    private final boolean empty;
     private String address;
     private int port;
     private int localPort;
@@ -26,13 +30,17 @@ public class SocketClient extends AsyncTask<Void, Void, JSONObject> {
         this.port = port;
         this.localPort = LOCAL_PORT;
         this.message = message;
+        this.empty = getTextEmpty();
     }
+
     @Override
     protected JSONObject doInBackground(Void... voids) {
         JSONObject jsonResponse = null;
         Socket socket = new Socket();
         DataOutputStream dos = null;
         DataInputStream dis = null;
+
+
 
         try {
             Log.d("SocketClient", "Attempting to create socket...");

