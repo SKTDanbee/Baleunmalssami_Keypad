@@ -5,6 +5,7 @@ import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.LOCAL_PORT;
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.getEMOTION;
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.getTextEmpty;
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.setEMOTION;
+import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.setIsImmoral;
 import static com.myhome.rpgkeyboard.keyboardview.KeyboardNumpad.inputConnection;
 
 import android.os.AsyncTask;
@@ -75,6 +76,9 @@ public class SocketClient extends AsyncTask<Void, Void, JSONObject> {
                 setEMOTION(jsonResponse.getString("emotion"));
                 Log.d("EMOTION", "EMOTION: " + jsonResponse.getString("emotion"));
                 Log.d("EMOTION", getEMOTION());
+                setIsImmoral((float) jsonResponse.getDouble("is_immoral"));
+                Log.d("IMMORAL", "IMMORAL: " + jsonResponse.getDouble("is_immoral"));
+
             } else {
                 Log.d("SocketClient", "No response or incomplete data received");
             }

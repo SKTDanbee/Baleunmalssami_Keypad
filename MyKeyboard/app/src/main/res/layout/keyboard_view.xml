@@ -4,10 +4,27 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@color/keyboardBackground">
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+        <include
+                layout="@layout/emoji_item"
+                android:layout_gravity="left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        <!--            <include-->
+        <!--                layout="@layout/llm_explain"-->
+        <!--                android:layout_gravity="right"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"/>-->
+    </LinearLayout>
+
     <FrameLayout
+
+
             android:id="@+id/keyboard_frame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="233dp">
 
     </FrameLayout>
 
