@@ -107,8 +107,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun loadCSVData(context: Context) {
+        clearTables()
         loadProfaneWordsFromCSV(context, "profane_words.csv")
         loadEmojisFromCSV(context, "emojis.csv")
+    }
+
+    private fun clearTables() {
+        val db = this.writableDatabase
+        db.execSQL("DELETE FROM $TABLE_PROFANE_WORDS")
+        db.execSQL("DELETE FROM $TABLE_EMOJIS")
     }
 
     private fun loadProfaneWordsFromCSV(context: Context, fileName: String) {
@@ -151,5 +158,4 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             }
         }
     }
-
 }
