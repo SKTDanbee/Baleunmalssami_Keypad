@@ -2,10 +2,13 @@ package com.myhome.rpgkeyboard.keyboardview;
 
 
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.LOCAL_PORT;
+import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.SERVER_IP;
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.getEMOTION;
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.getTextEmpty;
+import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.setAbuse;
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.setEMOTION;
 import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.setIsImmoral;
+import static com.myhome.rpgkeyboard.keyboardview.ConstantsKt.setLlm_answer;
 import static com.myhome.rpgkeyboard.keyboardview.KeyboardNumpad.inputConnection;
 
 import android.os.AsyncTask;
@@ -27,7 +30,7 @@ public class SocketClient extends AsyncTask<Void, Void, JSONObject> {
     private JSONObject message;
 
     public SocketClient(String address, int port, JSONObject message) {
-        this.address = address;
+        this.address = SERVER_IP;
         this.port = port;
         this.localPort = LOCAL_PORT;
         this.message = message;
@@ -73,12 +76,20 @@ public class SocketClient extends AsyncTask<Void, Void, JSONObject> {
 
             jsonResponse = new JSONObject(response);
             if (jsonResponse != null) {
-                setEMOTION(jsonResponse.getString("emotion"));
-                Log.d("EMOTION", "EMOTION: " + jsonResponse.getString("emotion"));
-                Log.d("EMOTION", getEMOTION());
-                setIsImmoral((float) jsonResponse.getDouble("is_immoral"));
-                Log.d("IMMORAL", "IMMORAL: " + jsonResponse.getDouble("is_immoral"));
 
+                if (jsonResponse.getString("llm_answer") != null) {
+                    setLlm_answer(jsonResponse.getString("llm_answer"));
+                    Log.d("llm_answer", "llm_answer: " + jsonResponse.getString("llm_answer"));
+                    setLlm_answer(jsonResponse.getString("llm_answer"));
+                }
+                else {
+                    setEMOTION(jsonResponse.getString("emotion"));
+                    Log.d("EMOTION", "EMOTION: " + jsonResponse.getString("emotion"));
+                    Log.d("EMOTION", getEMOTION());
+                    setIsImmoral((float) jsonResponse.getDouble("is_immoral"));
+                    setAbuse((float) jsonResponse.getDouble("Abuse"));
+                    Log.d("IMMORAL", "IMMORAL: " + jsonResponse.getDouble("is_immoral"));
+                }
             } else {
                 Log.d("SocketClient", "No response or incomplete data received");
             }

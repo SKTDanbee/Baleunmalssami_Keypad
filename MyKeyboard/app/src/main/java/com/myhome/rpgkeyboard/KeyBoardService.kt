@@ -6,12 +6,15 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.myhome.rpgkeyboard.keyboardview.*
 import kotlinx.android.synthetic.main.emoji_left.view.emoji_text
+import kotlinx.android.synthetic.main.llm_explain.view.key_button
+import org.json.JSONObject
 
 
 class KeyBoardService : InputMethodService(){
@@ -66,6 +69,26 @@ class KeyBoardService : InputMethodService(){
 
         handler.post(updateEmojiRunnable)
         // Add other modifications here
+
+        val llmExplainView = keyboardView.findViewById<View>(R.id.key_button)
+        val keyButton = llmExplainView.findViewById<Button>(R.id.key_button)
+        val originalText = keyButton.text
+        keyButton.setOnClickListener {
+            if (getIsImmoral() >= 0.8f) {
+                if (keyButton.text != originalText) {
+                    keyButton.text = originalText
+                } else {
+                    Log.d("KeyBoardService", "Send LLM request")
+                    keyButton.text = llm_answer
+                    val jsonMessage = JSONObject().apply {
+                        put("type", "llm")
+                    }
+                    SocketClient(SERVER_IP, SERVER_PORT, jsonMessage).execute()
+                }
+            } else {
+                Log.d("KeyBoardService", "Button press not allowed, getIsImmoral() < 0.8")
+            }
+        }
     }
 
     private val updateEmojiRunnable = object : Runnable {
@@ -73,6 +96,12 @@ class KeyBoardService : InputMethodService(){
             try {
                 val emojiView = keyboardView.findViewById<TextView>(R.id.emoji_text)
                 emojiView.text = getIsImmoralEmoji()
+
+//                val llmView = keyboardView.findViewById<TextView>(R.id.key_button)
+//                llmView.text = "TEST"
+
+
+
             } catch (e: Exception) {
                 Log.d("KeyBoardService", "Error: $e")
             }
