@@ -41,10 +41,12 @@ open class HangulMaker {
         Log.d("cursor", getCursorPosition().toString())
 
         val jsonmessage = JSONObject()
+        jsonmessage.put("isEmpty", getTextEmpty());
         jsonmessage.put("type", "commit");
         jsonmessage.put("char", char.toString());
         jsonmessage.put("cursor", getCursorPosition());
         SocketClient(SERVER_IP, SERVER_PORT, jsonmessage).execute();
+        setTextEmpty(false)
     }
     // get current state state은 delete에서 0 으로 지우면 글자를 다 지우고 1 2 3은 초성 중성 종성을 지우는 것
     // cursor 위치에 따라서 지워지는 것이 다름
@@ -202,9 +204,11 @@ open class HangulMaker {
         when(fetchState()){
             0->{
                 var jsonmessage = JSONObject()
+                jsonmessage.put("isEmpty", getTextEmpty());
                 jsonmessage.put("type", "delete");
                 jsonmessage.put("cursor", getCursorPosition());
                 SocketClient(SERVER_IP, SERVER_PORT, jsonmessage).execute();
+                setTextEmpty(false)
             }
         }
 
