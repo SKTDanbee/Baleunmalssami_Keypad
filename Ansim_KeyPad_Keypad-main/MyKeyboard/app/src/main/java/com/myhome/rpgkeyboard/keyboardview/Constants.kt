@@ -9,6 +9,7 @@ var EMOTION: String = "None" // 감정
 var Is_Immoral: Float = 0.0f // 비속어 비율
 var llm_answer: String = ""
 var Abuse: Float = 0.0f // 비속어 비율
+var currentMode = 1 // 현재 모드
 
 fun getEmotion(): String {
     return EMOTION

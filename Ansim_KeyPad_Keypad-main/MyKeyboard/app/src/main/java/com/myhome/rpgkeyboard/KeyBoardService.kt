@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -27,19 +28,31 @@ class KeyBoardService : InputMethodService(){
     var isQwerty = 0 // shared preference에 데이터를 저장하고 불러오는 기능 필요
 
     private val handler = Handler(Looper.getMainLooper())
-    private val updateInterval = 100L // 5 seconds
+    private val updateInterval = 300L // 5 seconds
+    private var connection : InputConnection? = null
 
     val keyboardInterationListener = object:KeyboardInterationListener{
+
+
         //inputconnection이 null일경우 재요청하는 부분 필요함
         override fun modechange(mode: Int) {
             currentInputConnection.finishComposingText()
+            Log.d("currentInputConnection", currentInputConnection.toString())
+            if (currentInputConnection == null) {
+                // inputConnection이 null일 경우 한글 키보드로 재설정
+                modechange(1)  // 한글 키보드 모드로 강제 변경
+                return
+            }
+
             when(mode){
                 0 ->{
+                    currentMode = 0
                     keyboardFrame.removeAllViews()
                     keyboardEnglish.inputConnection = currentInputConnection
                     keyboardFrame.addView(keyboardEnglish.getLayout())
                 }
                 1 -> {
+                    currentMode = 1
                     if(isQwerty == 0){
                         keyboardFrame.removeAllViews()
                         keyboardKorean.inputConnection = currentInputConnection
@@ -51,14 +64,17 @@ class KeyBoardService : InputMethodService(){
                     }
                 }
                 2 -> {
+                    currentMode = 2
                     keyboardFrame.removeAllViews()
                     keyboardSimbols.inputConnection = currentInputConnection
                     keyboardFrame.addView(keyboardSimbols.getLayout())
                 }
                 3 -> {
+                    currentMode = 3
                     keyboardFrame.removeAllViews()
                     keyboardFrame.addView(KeyboardEmoji.newInstance(applicationContext, layoutInflater, currentInputConnection, this))
                 }
+
             }
         }
     }
@@ -99,7 +115,15 @@ class KeyBoardService : InputMethodService(){
 
     private val updateEmojiRunnable = object : Runnable {
         override fun run() {
+
+            if (currentInputConnection != connection){
+                connection = currentInputConnection
+                updateInputConnection()
+            }
+
             try {
+                Log.d("inputConnection", currentInputConnection.toString())
+
                 val emojiView = keyboardView.findViewById<TextView>(R.id.emoji_text)
                 emojiView.text = getIsImmoralEmoji()
                 Log.d("EmojiView", emojiView.text.toString())
@@ -114,9 +138,9 @@ class KeyBoardService : InputMethodService(){
     }
 
 
-
-
     override fun onCreateInputView(): View {
+//
+
         keyboardKorean = KeyboardKorean(applicationContext, layoutInflater, keyboardInterationListener)
         keyboardEnglish = KeyboardEnglish(applicationContext, layoutInflater, keyboardInterationListener)
         keyboardSimbols = KeyboardSimbols(applicationContext, layoutInflater, keyboardInterationListener)
@@ -128,6 +152,7 @@ class KeyBoardService : InputMethodService(){
         keyboardSimbols.init()
 
         return keyboardView
+
     }
 
     override fun updateInputViewShown() {
@@ -140,6 +165,13 @@ class KeyBoardService : InputMethodService(){
         else{
             keyboardInterationListener.modechange(1)
         }
+    }
+
+
+    fun updateInputConnection() {
+        // keboard 재실행
+        keyboardFrame.removeAllViews()
+        keyboardInterationListener.modechange(currentMode)
     }
 
 }

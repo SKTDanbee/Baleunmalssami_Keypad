@@ -65,29 +65,32 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         val modifiedText = StringBuilder()
         var start = 0
 
-        while (start < beforeText.length) {
-            var found = false
-            for (i in start until beforeText.length) {
-                val substring = beforeText.substring(start, i + 1)
-                if (dbHelper.isProfaneWord(substring)) {
-                    val emoji = dbHelper.getEmojiForEmotion(getEmotion())
-                    if (emoji != null) {
-                        modifiedText.append(emoji)
-                        start = i + 1
-                        found = true
-                        break
+        if (Is_Immoral > 0.25) {
+
+            while (start < beforeText.length) {
+                var found = false
+                for (i in start until beforeText.length) {
+                    val substring = beforeText.substring(start, i + 1)
+                    if (dbHelper.isProfaneWord(substring)) {
+                        val emoji = dbHelper.getEmojiForEmotion(getEmotion())
+                        if (emoji != null) {
+                            modifiedText.append(emoji)
+                            start = i + 1
+                            found = true
+                            break
+                        }
                     }
                 }
+                if (!found) {
+                    modifiedText.append(beforeText[start])
+                    start++
+                }
             }
-            if (!found) {
-                modifiedText.append(beforeText[start])
-                start++
-            }
-        }
 
-        if (modifiedText.toString() != beforeText) {
-            inputConnection?.deleteSurroundingText(beforeText.length, 0)
-            inputConnection?.commitText(modifiedText.toString(), 1)
+            if (modifiedText.toString() != beforeText) {
+                inputConnection?.deleteSurroundingText(beforeText.length, 0)
+                inputConnection?.commitText(modifiedText.toString(), 1)
+            }
         }
     }
 
