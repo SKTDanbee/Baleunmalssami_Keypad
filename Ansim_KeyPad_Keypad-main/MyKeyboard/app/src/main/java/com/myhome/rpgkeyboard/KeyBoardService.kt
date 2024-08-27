@@ -170,6 +170,9 @@ class KeyBoardService : InputMethodService(){
 
     fun updateInputConnection() {
         // keboard 재실행
+//        SocketClient(SERVER_IP, SERVER_PORT, JSONObject().apply {
+//            put("type", "End")
+//        }).execute()
         keyboardFrame.removeAllViews()
         keyboardInterationListener.modechange(currentMode)
     }
