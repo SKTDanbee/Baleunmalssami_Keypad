@@ -2,7 +2,7 @@ package com.myhome.rpgkeyboard.keyboardview
 
 import android.util.Log
 
-const val SERVER_IP: String = "10.0.2.2" // 서버 IP 주소
+const val SERVER_IP: String = "192.168.130.113" // 서버 IP 주소
 const val SERVER_PORT: Int = 12345 // 서버 포트 번호
 const val LOCAL_PORT: Int = 12346 // 로컬 포트 번호
 var EMOTION: String = "None" // 감정
@@ -16,6 +16,15 @@ fun getEmotion(): String {
 }
 fun setEmotion(emotion: String) {
     EMOTION = emotion
+}
+
+var originalTextMap: MutableMap<Int, String> = mutableMapOf()
+
+// text 가 empty이면 originalTextMap을 비움
+fun clearOriginalTextMap() {
+    if (getTextEmpty()) {
+        originalTextMap.clear()
+    }
 }
 
 

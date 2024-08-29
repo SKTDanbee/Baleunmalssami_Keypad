@@ -85,6 +85,9 @@ class KeyBoardService : InputMethodService(){
         keyboardFrame = keyboardView.findViewById(R.id.keyboard_frame)
 
         handler.post(updateEmojiRunnable)
+        Log.d("KeyBoardService", "onCreate")
+//        clearOriginalTextMap()
+
 
         val llmExplainView = keyboardView.findViewById<View>(R.id.key_button)
         val keyButton = llmExplainView.findViewById<Button>(R.id.key_button)
@@ -118,6 +121,7 @@ class KeyBoardService : InputMethodService(){
             if (currentInputConnection != connection){
                 connection = currentInputConnection
                 updateInputConnection()
+                clearOriginalTextMap()
             }
 
             try {

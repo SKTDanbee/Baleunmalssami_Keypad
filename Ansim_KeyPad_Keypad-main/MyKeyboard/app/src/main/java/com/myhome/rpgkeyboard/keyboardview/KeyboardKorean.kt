@@ -24,11 +24,10 @@ import com.myhome.rpgkeyboard.*
 import com.myhome.rpgkeyboard.database.DatabaseHelper
 import org.json.JSONObject
 import java.lang.NumberFormatException
-
 class KeyboardKorean constructor(var context:Context, var layoutInflater: LayoutInflater, var keyboardInterationListener: KeyboardInterationListener){
 
     private var originalText: String? = null
-    private var originalTextMap: MutableMap<Int, String> = mutableMapOf()
+
 
     // log cursor position Delete 할 때 또는 커서를 옮긴 후에도 사용
     fun logCursor(cursorPosition:Int){
