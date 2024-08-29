@@ -47,7 +47,7 @@ class KeyboardEnglish constructor(var context:Context, var layoutInflater: Layou
     val layoutLines = ArrayList<LinearLayout>()
     var downView:View? = null
     var sound = 0
-    var vibrate = 0
+    var vibrate = 1
     var capsView:ImageView? = null
 
     fun getCursorPosition(): Int {

@@ -103,9 +103,8 @@ class KeyBoardService : InputMethodService(){
                     }
 
                     // 비동기 소켓 요청
-                    val reMessage: JSONObject? = SocketClient(SERVER_IP, SERVER_PORT, jsonMessage).execute().get();
-                    LLMTextView.text = reMessage?.getString("llm_answer") ?: "답변 생성 실패 "
-
+                    val reMessage: JSONObject? = SocketClient(SERVER_IP, SERVER_PORT, jsonMessage).execute().get()
+                    LLMTextView.text = reMessage?.getString("llm_answer") ?: "답변 생성 실패"
                 }
             } else {
                 Log.d("KeyBoardService", "Button press not allowed, getIsImmoral() < 0.8")
@@ -129,6 +128,12 @@ class KeyBoardService : InputMethodService(){
                 Log.d("EmojiView", emojiView.text.toString())
 //                val llm_text = keyboardView.findViewById<TextView>(R.id.key_button)
 //                llm_text.text = llm_answer
+
+                val LLMTextView = keyboardView.findViewById<TextView>(R.id.key_button)
+                if (getIsImmoral() < 0.8 && LLMTextView.text != "+") {
+                    LLMTextView.text = "+"
+                }
+
 
             } catch (e: Exception) {
                 Log.d("KeyBoardService", "Error: $e")

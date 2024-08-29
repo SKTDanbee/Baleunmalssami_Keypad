@@ -27,6 +27,9 @@ import java.lang.NumberFormatException
 
 class KeyboardKorean constructor(var context:Context, var layoutInflater: LayoutInflater, var keyboardInterationListener: KeyboardInterationListener){
 
+    private var originalText: String? = null
+    private var originalTextMap: MutableMap<Int, String> = mutableMapOf()
+
     // log cursor position Delete 할 때 또는 커서를 옮긴 후에도 사용
     fun logCursor(cursorPosition:Int){
         Log.d("cursor", cursorPosition.toString())
@@ -62,10 +65,10 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
     fun replaceTextIfNeeded() {
         val dbHelper = DatabaseHelper(context)
         val beforeText = inputConnection?.getTextBeforeCursor(100, 0).toString()
-        val modifiedText = StringBuilder()
-        var start = 0
 
         if (Is_Immoral > 0.25) {
+            val modifiedText = StringBuilder()
+            var start = 0
 
             while (start < beforeText.length) {
                 var found = false
@@ -74,6 +77,7 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
                     if (dbHelper.isProfaneWord(substring)) {
                         val emoji = dbHelper.getEmojiForEmotion(getEmotion())
                         if (emoji != null) {
+                            originalTextMap[start] = substring // 원래 텍스트를 저장
                             modifiedText.append(emoji)
                             start = i + 1
                             found = true
@@ -91,6 +95,24 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
                 inputConnection?.deleteSurroundingText(beforeText.length, 0)
                 inputConnection?.commitText(modifiedText.toString(), 1)
             }
+        } else {
+            // is_immoral 점수가 낮아지면 원래 텍스트 복구
+            if (originalTextMap.isNotEmpty()) {
+                val currentText = inputConnection?.getTextBeforeCursor(100, 0).toString()
+                val restoredText = StringBuilder(currentText)
+
+                // 원래 텍스트를 복구
+                originalTextMap.forEach { (startIndex, originalText) ->
+                    val endIndex = startIndex + originalText.length
+                    if (endIndex <= restoredText.length) {
+                        restoredText.replace(startIndex, endIndex, originalText)
+                    }
+                }
+
+                inputConnection?.deleteSurroundingText(currentText.length, 0)
+                inputConnection?.commitText(restoredText.toString(), 1)
+                originalTextMap.clear() // 복구 후에는 다시 맵을 비움
+            }
         }
     }
 
@@ -106,7 +128,7 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
             field = inputConnection
     }
     var sound = 0
-    var vibrate = 0
+    var vibrate = 1
     val numpadText = listOf<String>("1","2","3","4","5","6","7","8","9","0")
     val firstLineText = listOf<String>("ㅂ","ㅈ","ㄷ","ㄱ","ㅅ","ㅛ","ㅕ","ㅑ","ㅐ","ㅔ")
     val secondLineText = listOf<String>("ㅁ","ㄴ","ㅇ","ㄹ","ㅎ","ㅗ","ㅓ","ㅏ","ㅣ")
@@ -131,7 +153,7 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
         val height = sharedPreferences.getInt("keyboardHeight", 150)
         val config = context.getResources().configuration
         sound = sharedPreferences.getInt("keyboardSound", -1)
-        vibrate = sharedPreferences.getInt("keyboardVibrate", -1)
+        vibrate = 1
 
         val numpadLine = koreanLayout.findViewById<LinearLayout>(
             R.id.numpad_line
@@ -261,6 +283,7 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
     }
 
     private fun playVibrate(){
+        Log.d("vibrate", vibrate.toString())
         if(vibrate > 0){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(70, vibrate))
@@ -306,7 +329,9 @@ class KeyboardKorean constructor(var context:Context, var layoutInflater: Layout
                     if (isCaps) {
                         modeChange()
                     }
+
                 }
+
             }
         }
         actionButton.setOnClickListener(clickListener)

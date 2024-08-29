@@ -31,8 +31,12 @@ fun getIsImmoralEmoji(): String {
     if (Is_Immoral > 0.75) {
         return "🔴"
     }
-    else if(0.75 >= Is_Immoral  && Is_Immoral> 0.2 ){
-        return "🟠"
+    else if(0.75 >= Is_Immoral  && Is_Immoral> 0.27 ){
+        if (Abuse < 0.1){
+            return "🟢"
+        }else{
+            return "🟠"
+        }
     }
     else{
         return "🟢"

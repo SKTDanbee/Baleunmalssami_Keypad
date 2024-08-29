@@ -39,8 +39,8 @@ class KeyboardSimbols constructor(var context:Context, var layoutInflater: Layou
     val layoutLines = ArrayList<LinearLayout>()
     var downView:View? = null
     var animationMode:Int = 0
-    var vibrate = 0
-    var sound = 0
+    var vibrate = 1
+    var sound = 1
     var capsView:ImageView? = null
 
     fun init(){
@@ -55,7 +55,7 @@ class KeyboardSimbols constructor(var context:Context, var layoutInflater: Layou
         val height = sharedPreferences.getInt("keyboardHeight", 150)
         animationMode = sharedPreferences.getInt("theme", 0)
         sound = sharedPreferences.getInt("keyboardSound", -1)
-        vibrate = sharedPreferences.getInt("keyboardVibrate", -1)
+        vibrate = sharedPreferences.getInt("keyboardVibrate", 1)
 
         val numpadLine = simbolsLayout.findViewById<LinearLayout>(
             R.id.numpad_line
@@ -133,7 +133,7 @@ class KeyboardSimbols constructor(var context:Context, var layoutInflater: Layou
     private fun playVibrate(){
         if(vibrate > 0){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(70, vibrate))
+                vibrator.vibrate(VibrationEffect.createOneShot(70, VibrationEffect.DEFAULT_AMPLITUDE))
             }
             else{
                 vibrator.vibrate(70)
@@ -147,6 +147,7 @@ class KeyboardSimbols constructor(var context:Context, var layoutInflater: Layou
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 inputConnection?.requestCursorUpdates(InputConnection.CURSOR_UPDATE_IMMEDIATE)
             }
+            Log.d("actionButton", actionButton.text.toString())
             playVibrate()
             val cursorcs:CharSequence? =  inputConnection?.getSelectedText(InputConnection.GET_TEXT_WITH_STYLES)
             if(cursorcs != null && cursorcs.length >= 2){

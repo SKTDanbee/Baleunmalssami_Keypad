@@ -316,7 +316,8 @@
             android:id="@+id/action_key_mode_change"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:theme="@style/SmallText"/>
     <include
             layout="@layout/keyboard_item"
             android:id="@+id/action_key_rest"

@@ -34,7 +34,6 @@ public class SocketClient extends AsyncTask<Void, Void, JSONObject> {
     public SocketClient(String address, int port, JSONObject message) {
         this.address = SERVER_IP;
         this.port = port;
-        this.localPort = LOCAL_PORT;
         this.message = message;
         this.empty = getTextEmpty();
     }
@@ -50,7 +49,6 @@ public class SocketClient extends AsyncTask<Void, Void, JSONObject> {
 
         try {
             Log.d("SocketClient", "Attempting to create socket...");
-            socket.bind(new InetSocketAddress(localPort));
             socket.connect(new InetSocketAddress(address, port), 5000); // 5 seconds timeout
             Log.d("SocketClient", "Socket created: " + socket);
 
