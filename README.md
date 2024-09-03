@@ -15,3 +15,5 @@ Ansim Keypad는 안드로이드 키보드 오픈소스 기반으로 추가 개�
 ## 사용 기술
 SQLite, Kotlin, Android Studio, Git
 
+## 참고
+https://github.com/godsangin/Keyboard-Sample 을 바탕으로 제작되었습니다.
